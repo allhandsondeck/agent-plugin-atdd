@@ -1,180 +1,117 @@
 # ATDD Agent Plugin
 
-A small, shared agent skill for Acceptance Test-Driven Development (ATDD).
-Develop software from agreed user stories and acceptance criteria using a
-test-first ATDD workflow.
+A shared Acceptance Test-Driven Development (ATDD) workflow for coding agents.
+Agree what success looks like, demonstrate missing behaviour with acceptance
+tests, then implement and verify the result.
 
-## Quick start
-
-Install once in your terminal:
-
-| Client | Installation |
-| --- | --- |
-| Claude Code | `claude plugin marketplace add allhandsondeck/agent-plugin-atdd` then `claude plugin install atdd@atdd` |
-| Codex CLI | `codex plugin marketplace add allhandsondeck/agent-plugin-atdd` then `codex plugin add atdd@atdd` |
-
-Start a fresh session in the project you want to work on. Send one of these
-as a **chat prompt**, replacing the example feature with your own:
-
-**Claude Code**
-
-```text
-/atdd:atdd-workflow help me define and build a feature for exporting records to CSV.
-```
-
-**Codex CLI**
-
-```text
-$atdd-workflow help me define and build a feature for exporting records to CSV.
-```
-
-No requirements document is needed to start; the skill helps you draft one.
-It checks the chosen source and saves missing requirements before writing tests.
-If you already have stories, ask it to work on a specific story in that file.
-See [detailed installation and updates](#try-it).
-
-## Tested clients
-
-Client checks reported for `0.1.3`; the `0.1.4` instruction update has not yet
-been exercised in live client sessions:
-
-| Client | Status | Evidence and scope |
-| --- | --- | --- |
-| Claude Code | Checked by maintainer | Installation and use; client version not recorded. |
-| Codex | Checked by maintainer | Installation and use; client version not recorded. |
-| VS Code / Copilot | Packaged; not verified end to end | Includes the `/atdd` command and installation instructions. |
-| Copilot CLI | Not verified | No client-specific trial recorded. |
-| Cursor and other agents | Not verified | A portable manifest and shared skill do not establish client compatibility. |
-
-Claude Code and Codex checks are reported by the maintainer. Both Claude
-manifests also pass the strict Claude packaging validators. Model responses
-can vary; review agreed requirements, test failures and implementation changes.
-
-See the [latest release notes](docs/releases/v0.1.4.md).
+Use it to turn a feature request or an existing user story into testable
+outcomes before changing production code. It uses your project's test tools;
+there are no runtime dependencies, hooks, MCP servers or custom test frameworks.
 
 ## How it works
 
-1. Locate requirements or help write the selected user story and its criteria.
-2. Write Given / When / Then scenarios and wait for developer agreement.
-3. Write acceptance tests, demonstrate that they fail for the intended reason,
-   then pause for authorisation to implement.
+1. Find the requirements or help draft the selected story and acceptance criteria.
+2. Propose Given / When / Then scenarios and wait for your agreement.
+3. Write acceptance tests, demonstrate meaningful failures, then wait for your
+   authorisation to implement.
 4. Implement the agreed behaviour incrementally.
-5. Verify, refactor and record the results.
+5. Run acceptance and regression checks, refactor, and record the results.
 
-## Requirements and project context
+You review the intended behaviour before tests are written and the observed
+failures before implementation. The plugin guides the agent through these
+checkpoints; review its work as you would any other coding contribution.
 
-By default, the target project has two Markdown files:
+## Install and start
 
-```text
-docs/user-stories.md    Product stories, acceptance criteria and scenarios
-docs/atdd-context.md    Requirements location, stack, testing approach and setup
-```
+Choose your client. Run the installation commands in your terminal, then start
+a fresh agent session in the project you want to work on and send the chat
+prompt shown below. Replace the example feature with your own request.
 
-You can point the agent to another requirements file or directory. Otherwise,
-it reuses the concrete source saved in the context, falling back to the default
-only when no source is saved. It checks the path and reads the relevant contents
-on every run, working directly with the source to avoid duplicate documents.
-If requirements are missing, the agent helps draft and save them interactively.
-The context records the actual path and its status; unverified or missing
-requirements are marked as pending. Before writing tests, the agent reads the
-saved source to confirm the agreed story, criteria and scenarios are present.
-The selected story must be sufficiently defined and agreed before executable
-tests or implementation begin; other stories can remain incomplete.
-
-A user story describes who needs what and why. Acceptance criteria define
-observable conditions it must satisfy. Given / When / Then scenarios provide
-concrete examples; acceptance tests verify those outcomes through code.
-Keep story and criterion identifiers stable so tests can reference them.
-Record test commands and evidence beneath the selected story or link existing
-project evidence.
-
-On first use, the agent inspects the project and asks only for missing
-information. It reuses suitable test tools and agrees any new tooling before
-introducing it. The testing boundary follows the behaviour, such as a browser
-journey or API outcome. Later runs reuse and check the saved context. If the
-test environment is blocked, the agent stops to resolve it with the developer.
-
-## Package
-
-```text
-plugin.json                     Portable Agent Plugins manifest
-skills/atdd-workflow/SKILL.md    Shared workflow
-com.github.copilot/commands/atdd.md  Copilot slash-command entry point
-.agents/plugins/marketplace.json  Codex distribution catalogue
-.claude-plugin/plugin.json       Claude Code compatibility manifest
-.claude-plugin/marketplace.json  Claude Code distribution catalogue
-```
-
-The skill contains all workflow instructions. The manifest provides packaging
-metadata only. There are no runtime dependencies, hooks, MCP servers or custom
-test frameworks. Use the target project's existing test tools.
-
-The package follows the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/specification)
-and its [manifest schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.json).
-Skills are discovered from the fixed `skills/` directory. A small Copilot
-command lives in the standard's `com.github.copilot` extension namespace;
-it loads the shared skill without duplicating the workflow. Other clients
-can ignore this namespace and use the skill directly. Claude Code's
-compatibility manifest and catalogue sit in `.claude-plugin/` and load the
-same skill. Root `plugin.json` remains the portable manifest. See the
-[client extension rules](https://agent-plugins.org/plugin-authors/client-extensions).
-
-The standard defines packaging and discovery; installation and invocation are
-client-specific. Choose a [compatible client](https://agent-plugins.org/compatible-clients)
-for full plugin testing. Standalone skill support alone does not establish
-support for the plugin format.
-
-## Try it
-
-### Install from GitHub with Claude Code
-
-Run these commands in your terminal:
+### Claude Code
 
 ```sh
 claude plugin marketplace add allhandsondeck/agent-plugin-atdd
 claude plugin install atdd@atdd
 ```
 
-Start a fresh Claude Code session in the target project and invoke:
+Chat prompt:
 
 ```text
-/atdd:atdd-workflow work on story US-003 in docs/user-stories.md
+/atdd:atdd-workflow help me define and build a feature for exporting records to CSV.
 ```
 
-The shared skill itself is the namespaced slash command; no initialisation
-prompt is required. For local development, run
-`claude --plugin-dir /absolute/path/to/agent-plugin-atdd` from the target
-project and invoke the same command. To update an installed copy:
-
-```sh
-claude plugin marketplace update atdd
-claude plugin update atdd@atdd
-```
-
-Restart the session after updating. This integration targets Claude Code;
-Claude chat and Cowork installation has not been verified. See
-[Claude Code plugin documentation](https://code.claude.com/docs/en/plugins).
-
-### Install from GitHub with Codex
+### Codex CLI
 
 ```sh
 codex plugin marketplace add allhandsondeck/agent-plugin-atdd
 codex plugin add atdd@atdd
 ```
 
-Start a fresh Codex session in your project, then invoke:
+Chat prompt:
 
 ```text
-$atdd-workflow work on story US-003 in docs/user-stories.md
+$atdd-workflow help me define and build a feature for exporting records to CSV.
 ```
 
-Use `/skills` or type `$` to find the skill. The repository includes a small
-Codex distribution catalogue at `.agents/plugins/marketplace.json`, pointing
-to the portable package at the repository root. The entry's `source: local`
-means local to the fetched Git snapshot; consumers do not need a local checkout.
-The catalogue does not change the shared plugin manifest or workflow.
+Use `/skills` or type `$` to find **atdd-workflow** if needed.
 
-To refresh the Git marketplace and reinstall the latest available package:
+### VS Code / Copilot
+
+1. Run **Chat: Install Plugin from Source** from the Command Palette.
+2. Enter `https://github.com/allhandsondeck/agent-plugin-atdd.git`.
+3. Run **Chat: Open Customizations** and confirm **atdd** is enabled under
+   **Plugins** for your chosen harness and workspace. In the Agents window,
+   open **Customizations** from the sidebar.
+4. In a fresh chat, select `/atdd` and describe your feature. The host may show
+   a plugin-qualified command name.
+
+Plugin support must be enabled through `chat.plugins.enabled`; availability
+also depends on your harness and organisation policy. This route is packaged
+but has not been verified end to end.
+
+## Requirements and project files
+
+You can start without a requirements document; the agent helps you draft one.
+By default, it uses these files in your target project:
+
+```text
+docs/user-stories.md    Stories, acceptance criteria and scenarios
+docs/atdd-context.md    Requirements source, status, test tools and setup
+```
+
+Already have requirements? Include the story and source in your request, for
+example: `work on story US-003 in docs/user-stories.md`. You can supply another
+file or directory. Later runs reuse the saved source unless you specify another.
+
+The agent checks and reads the source, helps save missing requirements, and
+marks unfinished setup as pending. The selected story, criteria and scenarios
+must be saved and agreed before executable tests begin; the rest of your
+backlog can remain incomplete. It asks only for missing information, reuses
+suitable test tools and agrees new tooling with you before introducing it.
+
+## Tested clients
+
+| Client | Status |
+| --- | --- |
+| Claude Code | Installation and use checked by the maintainer on `0.1.3`. |
+| Codex | Installation and use checked by the maintainer on `0.1.3`. |
+| VS Code / Copilot | Packaged; complete workflow unverified. |
+| Copilot CLI, Cursor and other clients | Unverified. |
+
+Client versions were not recorded. The `0.1.4` instruction changes have not yet
+been exercised in live client sessions. See the [release notes](docs/releases/v0.1.4.md)
+for validation details.
+
+## Update
+
+For Claude Code:
+
+```sh
+claude plugin marketplace update atdd
+claude plugin update atdd@atdd
+```
+
+For Codex CLI, refresh the marketplace and reinstall the package:
 
 ```sh
 codex plugin marketplace upgrade atdd
@@ -182,140 +119,20 @@ codex plugin remove atdd@atdd
 codex plugin add atdd@atdd
 ```
 
-Start a fresh session after updating. See the [Codex marketplace guide](https://developers.openai.com/plugins/build/plugins).
+In VS Code, open **Plugins** and select **Check for and Apply Updates**.
+Start a fresh session after updating and confirm the installed plugin version.
+Changes pushed to GitHub do not directly replace an installed cached copy.
 
-### VS Code and the Agents window
+## Development and feedback
 
-In a VS Code version with agent plugin support enabled:
+See the [development guide](docs/development.md) for package structure,
+validation commands and local testing. The [shared skill](skills/atdd-workflow/SKILL.md)
+contains the full workflow. Browse [GitHub releases](https://github.com/allhandsondeck/agent-plugin-atdd/releases)
+for published versions.
 
-1. Open the Command Palette and run **Chat: Install Plugin from Source**.
-2. Enter `https://github.com/allhandsondeck/agent-plugin-atdd.git`, or select
-   this checkout's local folder.
-3. Open **Chat: Open Customizations**, select **Plugins**, and confirm **atdd**
-   is enabled for the intended harness and workspace. In the Agents window,
-   open **Customizations** from the sidebar.
-4. Start a fresh session and type `/` to find the **atdd** command (the host
-   may show a plugin-qualified name). Select it and supply a user story or
-   feature request. The command loads the shared **atdd-workflow** skill.
-
-The command is the explicit Copilot entry point. The **atdd-workflow** skill
-can also be invoked directly where the host exposes skills. A diagnostic
-prompt asking the agent to locate `SKILL.md` is not an initialisation step.
-
-If plugin support is disabled, enable `chat.plugins.enabled` in VS Code settings.
-Availability depends on the selected harness and organisation policy. Installing
-the plugin does not make it a separate agent in the agent selector.
-
-To fetch published changes, open **Plugins** and select **Check for and Apply
-Updates** (the refresh icon). No compilation or npm publication is needed.
-See [agent plugins in VS Code](https://code.visualstudio.com/docs/agent-customization/agent-plugins).
-
-### Full plugin testing with Codex
-
-Codex installs local plugins through a marketplace catalogue. Keep this
-host-specific test catalogue outside the portable package. From this
-repository's root, create a temporary marketplace containing a package copy:
-
-```sh
-python3 - <<'PY'
-import json
-import shutil
-import tempfile
-from pathlib import Path
-
-root = Path(tempfile.mkdtemp(prefix="atdd-local-"))
-plugin = root / "plugins" / "atdd"
-plugin.mkdir(parents=True)
-for name in ("plugin.json", "README.md", "LICENSE"):
-    shutil.copy2(name, plugin / name)
-shutil.copytree("skills", plugin / "skills")
-shutil.copytree("com.github.copilot", plugin / "com.github.copilot")
-shutil.copytree(".claude-plugin", plugin / ".claude-plugin")
-catalogue = root / ".agents" / "plugins" / "marketplace.json"
-catalogue.parent.mkdir(parents=True)
-catalogue.write_text(json.dumps({
-    "name": "atdd-local",
-    "interface": {"displayName": "ATDD Local"},
-    "plugins": [{
-        "name": "atdd",
-        "source": {"source": "local", "path": "./plugins/atdd"},
-        "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
-        "category": "Productivity"
-    }]
-}, indent=2) + "\n")
-print(f"codex plugin marketplace add {root}")
-print("codex plugin add atdd@atdd-local")
-PY
-```
-
-Run the two commands printed by the script. Open a fresh Codex session in a
-small project with an existing test runner, then request:
-
-```text
-Use $atdd-workflow for story US-003 in docs/user-stories.md.
-```
-
-In the desktop app, restart the app, open the Plugins Directory, choose
-**ATDD Local** and install or enable **atdd**. The host installs a cached copy;
-edits to this checkout do not automatically update it. To retest edits, remove
-the test install and marketplace, then recreate and install the package:
-
-```sh
-codex plugin remove atdd@atdd-local
-codex plugin marketplace remove atdd-local
-```
-
-You can delete the temporary directory after removing the marketplace.
-See the [Codex local plugin guide](https://developers.openai.com/plugins/build/plugins).
-
-### Quick workflow-only testing
-
-Ask your agent to read this checkout's `skills/atdd-workflow/SKILL.md` by
-absolute path and follow it for a small feature in the current project.
-This tests the instructions without testing plugin discovery or installation.
-Alternatively, copy the skill folder into the host's documented skills directory.
-
-## Development
-
-Edit `skills/atdd-workflow/SKILL.md` to change the workflow. Validate
-`plugin.json` against the canonical manifest schema linked above and the
-skill against the [Agent Skills specification](https://agentskills.io/specification).
-Host-native manifest validators do not establish shared-standard conformance.
-Keep the portable and Claude manifest identity, version, description and
-author metadata consistent. Validate Claude packaging with
-`claude plugin validate .claude-plugin/plugin.json --strict` and
-`claude plugin validate .claude-plugin/marketplace.json --strict`.
-
-For a manual behaviour check in a disposable project, request a small feature.
-In Copilot, verify that the **atdd** command loads the bundled skill before
-starting the workflow. Command discovery alone does not prove execution.
-In Claude Code, invoke **/atdd:atdd-workflow** and check the same workflow.
-Confirm that the agent helps create missing requirements, records project
-context, and waits for agreement on the selected story, criteria and scenarios.
-It should demonstrate a meaningful test failure and wait again before
-implementation. Also check a missing requirements file, a stale context pointing
-to a missing file, alternative requirements locations, incomplete backlogs,
-reuse of a saved custom source and a blocked test environment. Before executable
-tests begin, confirm that the agreed story, criteria and scenarios were saved
-and read back from the chosen source, and the context records its actual status.
-
-## Updates and distribution
-
-This plugin is Markdown and JSON; there is no build or compilation step.
-For quick editing cycles, ask the agent to read the current skill by absolute
-path in a fresh session. For installed-plugin tests, refresh the package copy
-and installation as described above, then start a fresh session.
-
-For an initial public release, a Git repository with versioned releases and a
-host-supported marketplace entry is sufficient. The portable plugin format
-does not prescribe a registry. Codex supports Git-backed marketplace sources
-and optionally npm-backed plugin entries; npm publication is not required.
-Keep host-specific distribution metadata separate from the portable package.
-Publish new versions rather than silently replacing a released version.
-Refreshing a Git marketplace updates its snapshot; confirm the installed
-plugin version separately. Marketplace distribution is separate from listing
-in OpenAI's public plugin directory, which has its own submission process.
-See the [Codex packaging and distribution guide](https://developers.openai.com/plugins/build/plugins).
+Report installation issues or workflow surprises through
+[GitHub Issues](https://github.com/allhandsondeck/agent-plugin-atdd/issues),
+including your client, version and a redacted example.
 
 ## Licence
 
