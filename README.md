@@ -4,6 +4,54 @@ A small, shared agent skill for Acceptance Test-Driven Development (ATDD).
 Develop software from agreed user stories and acceptance criteria using a
 test-first ATDD workflow.
 
+## Quick start
+
+Install once in your terminal:
+
+| Client | Installation |
+| --- | --- |
+| Claude Code | `claude plugin marketplace add allhandsondeck/agent-plugin-atdd` then `claude plugin install atdd@atdd` |
+| Codex CLI | `codex plugin marketplace add allhandsondeck/agent-plugin-atdd` then `codex plugin add atdd@atdd` |
+
+Start a fresh session in the project you want to work on. Send one of these
+as a **chat prompt**, replacing the example feature with your own:
+
+**Claude Code**
+
+```text
+/atdd:atdd-workflow help me define and build a feature for exporting records to CSV.
+```
+
+**Codex CLI**
+
+```text
+$atdd-workflow help me define and build a feature for exporting records to CSV.
+```
+
+No requirements document is needed to start; the skill helps you draft one.
+If you already have stories, ask it to work on a specific story in that file.
+See [detailed installation and updates](#try-it).
+
+## Tested clients
+
+Status for the initial `0.1.3` release:
+
+| Client | Status | Evidence and scope |
+| --- | --- | --- |
+| Claude Code | Checked by maintainer | Installation and use; client version not recorded. |
+| Codex | Checked by maintainer | Installation and use; client version not recorded. |
+| VS Code / Copilot | Packaged; not verified end to end | Includes the `/atdd` command and installation instructions. |
+| Copilot CLI | Not verified | No client-specific trial recorded. |
+| Cursor and other agents | Not verified | A portable manifest and shared skill do not establish client compatibility. |
+
+Claude Code and Codex checks are reported by the maintainer. Both Claude
+manifests also pass the strict Claude packaging validators. Model responses
+can vary; review agreed requirements, test failures and implementation changes.
+
+See the [initial release notes](docs/releases/v0.1.3.md).
+
+## How it works
+
 1. Locate requirements or help write the selected user story and its criteria.
 2. Write Given / When / Then scenarios and wait for developer agreement.
 3. Write acceptance tests, demonstrate that they fail for the intended reason,
