@@ -70,7 +70,7 @@ support for the plugin format.
 
 ```sh
 codex plugin marketplace add allhandsondeck/agent-plugin-atdd
-codex plugin add atdd@atdd-plugins
+codex plugin add atdd@atdd
 ```
 
 Start a fresh Codex session in your project, then invoke:
@@ -88,9 +88,9 @@ The catalogue does not change the shared plugin manifest or workflow.
 To refresh the Git marketplace and reinstall the latest available package:
 
 ```sh
-codex plugin marketplace upgrade atdd-plugins
-codex plugin remove atdd@atdd-plugins
-codex plugin add atdd@atdd-plugins
+codex plugin marketplace upgrade atdd
+codex plugin remove atdd@atdd
+codex plugin add atdd@atdd
 ```
 
 Start a fresh session after updating. See the [Codex marketplace guide](https://developers.openai.com/plugins/build/plugins).

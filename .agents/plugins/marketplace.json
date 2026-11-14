@@ -1,7 +1,7 @@
 {
-  "name": "atdd-plugins",
+  "name": "atdd",
   "interface": {
-    "displayName": "ATDD Plugins"
+    "displayName": "ATDD"
   },
   "plugins": [
     {
