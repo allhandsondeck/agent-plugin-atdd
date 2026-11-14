@@ -29,12 +29,14 @@ $atdd-workflow help me define and build a feature for exporting records to CSV.
 ```
 
 No requirements document is needed to start; the skill helps you draft one.
+It checks the chosen source and saves missing requirements before writing tests.
 If you already have stories, ask it to work on a specific story in that file.
 See [detailed installation and updates](#try-it).
 
 ## Tested clients
 
-Status for the initial `0.1.3` release:
+Client checks reported for `0.1.3`; the `0.1.4` instruction update has not yet
+been exercised in live client sessions:
 
 | Client | Status | Evidence and scope |
 | --- | --- | --- |
@@ -48,7 +50,7 @@ Claude Code and Codex checks are reported by the maintainer. Both Claude
 manifests also pass the strict Claude packaging validators. Model responses
 can vary; review agreed requirements, test failures and implementation changes.
 
-See the [initial release notes](docs/releases/v0.1.3.md).
+See the [latest release notes](docs/releases/v0.1.4.md).
 
 ## How it works
 
@@ -68,9 +70,14 @@ docs/user-stories.md    Product stories, acceptance criteria and scenarios
 docs/atdd-context.md    Requirements location, stack, testing approach and setup
 ```
 
-You can point the agent to another requirements file or directory. It records
-that location and works directly with the source, avoiding duplicate documents.
-If requirements are missing, the agent helps create them interactively.
+You can point the agent to another requirements file or directory. Otherwise,
+it reuses the concrete source saved in the context, falling back to the default
+only when no source is saved. It checks the path and reads the relevant contents
+on every run, working directly with the source to avoid duplicate documents.
+If requirements are missing, the agent helps draft and save them interactively.
+The context records the actual path and its status; unverified or missing
+requirements are marked as pending. Before writing tests, the agent reads the
+saved source to confirm the agreed story, criteria and scenarios are present.
 The selected story must be sufficiently defined and agreed before executable
 tests or implementation begin; other stories can remain incomplete.
 
@@ -286,8 +293,11 @@ In Claude Code, invoke **/atdd:atdd-workflow** and check the same workflow.
 Confirm that the agent helps create missing requirements, records project
 context, and waits for agreement on the selected story, criteria and scenarios.
 It should demonstrate a meaningful test failure and wait again before
-implementation. Also check alternative requirements locations, incomplete
-backlogs, reuse of existing context and a blocked test environment.
+implementation. Also check a missing requirements file, a stale context pointing
+to a missing file, alternative requirements locations, incomplete backlogs,
+reuse of a saved custom source and a blocked test environment. Before executable
+tests begin, confirm that the agreed story, criteria and scenarios were saved
+and read back from the chosen source, and the context records its actual status.
 
 ## Updates and distribution
 

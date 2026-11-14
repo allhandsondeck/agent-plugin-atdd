@@ -23,7 +23,9 @@ configuration and relevant implementation before asking setup questions.
 Ask only about missing information and unresolved choices. Create a small
 `docs/atdd-context.md` in the target project to record:
 
-- The requirements file or directory and how stories are identified.
+- The concrete requirements file or directory, its verified status and how
+  stories are identified. If the source has not yet been created or checked,
+  mark it as pending; a default-path instruction is not a verified source.
 - The relevant stack and application boundaries being tested.
 - The agreed acceptance test tools, test locations and commands.
 - Required environment setup, services and test data, linking existing
@@ -43,18 +45,28 @@ agreed verification approach in the context file.
 
 ## 1. Understand requirements
 
-Use the developer's supplied requirements file or directory when given;
-otherwise use a single `docs/user-stories.md` at the target project's root.
-Record the chosen location in the context file. Work directly with an existing
-source without copying it into a competing requirements document. Preserve
-its structure and identifiers where possible.
+Resolve the requirements source in this order: the developer's supplied file
+or directory, the concrete source saved in `docs/atdd-context.md`, then the
+default `docs/user-stories.md` at the target project's root. On every run,
+check that the chosen path exists and read its relevant contents. For a
+directory, locate and read the file containing the selected story. A saved
+path or a generic instruction to use the default is not evidence that the
+requirements exist. If an existing source cannot be read, resolve that
+problem rather than treating it as missing or replacing it.
+
+Record the actual location and observed status in the context file. Work
+directly with an existing source without copying it into a competing
+requirements document. Preserve its structure and identifiers where possible.
 
 If requirements are missing, help create them interactively. Start with the
 requested behaviour, ask focused questions and draft a user story with
 acceptance criteria. Do not invent product rules or speculate about the
-entire product. A requirements document containing a sufficiently defined
-selected story is a prerequisite for the test-first implementation cycle;
-other stories can remain incomplete.
+entire product. Save the draft story and acceptance criteria in the chosen
+requirements source, creating its parent directories when needed. Read back
+the saved content and update the context with its actual path and status;
+do not leave a missing source represented as completed setup. A requirements
+document containing a sufficiently defined selected story is a prerequisite
+for the test-first implementation cycle; other stories can remain incomplete.
 
 By default, collect all known product stories in `docs/user-stories.md` rather
 than creating a separate document for each feature. Give each story a stable
@@ -100,6 +112,11 @@ the changes before continuing affected work. Existing explicit agreement in
 the current conversation can be reused; do not ask for it again unchanged.
 
 ## 3. Verify acceptance tests fail
+
+Before writing executable tests, read the saved requirements source and verify
+that it contains the selected story, agreed acceptance criteria and scenarios.
+If any are missing or incomplete, return to the requirements and scenario
+steps. A context entry or a draft only in chat does not meet this prerequisite.
 
 Translate the agreed scenarios into executable acceptance tests using the
 project's conventions. Keep assertions connected to the agreed outcomes; do
