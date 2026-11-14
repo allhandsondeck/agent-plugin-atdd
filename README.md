@@ -66,6 +66,35 @@ support for the plugin format.
 
 ## Try it
 
+### Install from GitHub with Codex
+
+```sh
+codex plugin marketplace add allhandsondeck/agent-plugin-atdd
+codex plugin add atdd@atdd-plugins
+```
+
+Start a fresh Codex session in your project, then invoke:
+
+```text
+$atdd-workflow work on story US-003 in docs/user-stories.md
+```
+
+Use `/skills` or type `$` to find the skill. The repository includes a small
+Codex distribution catalogue at `.agents/plugins/marketplace.json`, pointing
+to the portable package at the repository root. The entry's `source: local`
+means local to the fetched Git snapshot; consumers do not need a local checkout.
+The catalogue does not change the shared plugin manifest or workflow.
+
+To refresh the Git marketplace and reinstall the latest available package:
+
+```sh
+codex plugin marketplace upgrade atdd-plugins
+codex plugin remove atdd@atdd-plugins
+codex plugin add atdd@atdd-plugins
+```
+
+Start a fresh session after updating. See the [Codex marketplace guide](https://developers.openai.com/plugins/build/plugins).
+
 ### VS Code and the Agents window
 
 In a VS Code version with agent plugin support enabled:
