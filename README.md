@@ -44,6 +44,7 @@ test environment is blocked, the agent stops to resolve it with the developer.
 ```text
 plugin.json                     Portable Agent Plugins manifest
 skills/atdd-workflow/SKILL.md    Shared workflow
+com.github.copilot/commands/atdd.md  Copilot slash-command entry point
 ```
 
 The skill contains all workflow instructions. The manifest provides packaging
@@ -52,8 +53,11 @@ test frameworks. Use the target project's existing test tools.
 
 The package follows the [Agent Plugins 1.0.0 specification](https://agent-plugins.org/specification)
 and its [manifest schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.json).
-Skills are discovered from the fixed `skills/` directory. This package has no
-client extensions or host-specific manifests.
+Skills are discovered from the fixed `skills/` directory. A small Copilot
+command lives in the standard's `com.github.copilot` extension namespace;
+it loads the shared skill without duplicating the workflow. Other clients
+can ignore this namespace and use the skill directly. There are no
+host-specific manifests. See the [client extension rules](https://agent-plugins.org/plugin-authors/client-extensions).
 
 The standard defines packaging and discovery; installation and invocation are
 client-specific. Choose a [compatible client](https://agent-plugins.org/compatible-clients)
@@ -72,8 +76,13 @@ In a VS Code version with agent plugin support enabled:
 3. Open **Chat: Open Customizations**, select **Plugins**, and confirm **atdd**
    is enabled for the intended harness and workspace. In the Agents window,
    open **Customizations** from the sidebar.
-4. Start a fresh session, find **atdd-workflow** in the `/` menu and invoke it
-   with a user story or feature request.
+4. Start a fresh session and type `/` to find the **atdd** command (the host
+   may show a plugin-qualified name). Select it and supply a user story or
+   feature request. The command loads the shared **atdd-workflow** skill.
+
+The command is the explicit Copilot entry point. The **atdd-workflow** skill
+can also be invoked directly where the host exposes skills. A diagnostic
+prompt asking the agent to locate `SKILL.md` is not an initialisation step.
 
 If plugin support is disabled, enable `chat.plugins.enabled` in VS Code settings.
 Availability depends on the selected harness and organisation policy. Installing
@@ -102,6 +111,7 @@ plugin.mkdir(parents=True)
 for name in ("plugin.json", "README.md", "LICENSE"):
     shutil.copy2(name, plugin / name)
 shutil.copytree("skills", plugin / "skills")
+shutil.copytree("com.github.copilot", plugin / "com.github.copilot")
 catalogue = root / ".agents" / "plugins" / "marketplace.json"
 catalogue.parent.mkdir(parents=True)
 catalogue.write_text(json.dumps({
@@ -158,6 +168,8 @@ skill against the [Agent Skills specification](https://agentskills.io/specificat
 Host-native manifest validators do not establish shared-standard conformance.
 
 For a manual behaviour check in a disposable project, request a small feature.
+In Copilot, verify that the **atdd** command loads the bundled skill before
+starting the workflow. Command discovery alone does not prove execution.
 Confirm that the agent helps create missing requirements, records project
 context, and waits for agreement on the selected story, criteria and scenarios.
 It should demonstrate a meaningful test failure and wait again before

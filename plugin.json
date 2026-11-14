@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "atdd",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Develop software from agreed user stories and acceptance criteria using a test-first ATDD workflow.",
   "author": { "name": "Utku Kopuz" },
   "repository": "https://github.com/allhandsondeck/agent-plugin-atdd",
