@@ -45,6 +45,9 @@ test environment is blocked, the agent stops to resolve it with the developer.
 plugin.json                     Portable Agent Plugins manifest
 skills/atdd-workflow/SKILL.md    Shared workflow
 com.github.copilot/commands/atdd.md  Copilot slash-command entry point
+.agents/plugins/marketplace.json  Codex distribution catalogue
+.claude-plugin/plugin.json       Claude Code compatibility manifest
+.claude-plugin/marketplace.json  Claude Code distribution catalogue
 ```
 
 The skill contains all workflow instructions. The manifest provides packaging
@@ -56,8 +59,10 @@ and its [manifest schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.
 Skills are discovered from the fixed `skills/` directory. A small Copilot
 command lives in the standard's `com.github.copilot` extension namespace;
 it loads the shared skill without duplicating the workflow. Other clients
-can ignore this namespace and use the skill directly. There are no
-host-specific manifests. See the [client extension rules](https://agent-plugins.org/plugin-authors/client-extensions).
+can ignore this namespace and use the skill directly. Claude Code's
+compatibility manifest and catalogue sit in `.claude-plugin/` and load the
+same skill. Root `plugin.json` remains the portable manifest. See the
+[client extension rules](https://agent-plugins.org/plugin-authors/client-extensions).
 
 The standard defines packaging and discovery; installation and invocation are
 client-specific. Choose a [compatible client](https://agent-plugins.org/compatible-clients)
@@ -65,6 +70,35 @@ for full plugin testing. Standalone skill support alone does not establish
 support for the plugin format.
 
 ## Try it
+
+### Install from GitHub with Claude Code
+
+Run these commands in your terminal:
+
+```sh
+claude plugin marketplace add allhandsondeck/agent-plugin-atdd
+claude plugin install atdd@atdd
+```
+
+Start a fresh Claude Code session in the target project and invoke:
+
+```text
+/atdd:atdd-workflow work on story US-003 in docs/user-stories.md
+```
+
+The shared skill itself is the namespaced slash command; no initialisation
+prompt is required. For local development, run
+`claude --plugin-dir /absolute/path/to/agent-plugin-atdd` from the target
+project and invoke the same command. To update an installed copy:
+
+```sh
+claude plugin marketplace update atdd
+claude plugin update atdd@atdd
+```
+
+Restart the session after updating. This integration targets Claude Code;
+Claude chat and Cowork installation has not been verified. See
+[Claude Code plugin documentation](https://code.claude.com/docs/en/plugins).
 
 ### Install from GitHub with Codex
 
@@ -141,6 +175,7 @@ for name in ("plugin.json", "README.md", "LICENSE"):
     shutil.copy2(name, plugin / name)
 shutil.copytree("skills", plugin / "skills")
 shutil.copytree("com.github.copilot", plugin / "com.github.copilot")
+shutil.copytree(".claude-plugin", plugin / ".claude-plugin")
 catalogue = root / ".agents" / "plugins" / "marketplace.json"
 catalogue.parent.mkdir(parents=True)
 catalogue.write_text(json.dumps({
@@ -185,20 +220,21 @@ absolute path and follow it for a small feature in the current project.
 This tests the instructions without testing plugin discovery or installation.
 Alternatively, copy the skill folder into the host's documented skills directory.
 
-Claude Code is not currently on the Agent Plugins compatible clients list.
-Its standalone skill support can be used for workflow testing; this package
-does not include Claude's native plugin manifest.
-
 ## Development
 
 Edit `skills/atdd-workflow/SKILL.md` to change the workflow. Validate
 `plugin.json` against the canonical manifest schema linked above and the
 skill against the [Agent Skills specification](https://agentskills.io/specification).
 Host-native manifest validators do not establish shared-standard conformance.
+Keep the portable and Claude manifest identity, version, description and
+author metadata consistent. Validate Claude packaging with
+`claude plugin validate .claude-plugin/plugin.json --strict` and
+`claude plugin validate .claude-plugin/marketplace.json --strict`.
 
 For a manual behaviour check in a disposable project, request a small feature.
 In Copilot, verify that the **atdd** command loads the bundled skill before
 starting the workflow. Command discovery alone does not prove execution.
+In Claude Code, invoke **/atdd:atdd-workflow** and check the same workflow.
 Confirm that the agent helps create missing requirements, records project
 context, and waits for agreement on the selected story, criteria and scenarios.
 It should demonstrate a meaningful test failure and wait again before

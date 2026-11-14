@@ -1,0 +1,12 @@
+{
+  "name": "atdd",
+  "description": "The ATDD workflow plugin for Claude Code.",
+  "owner": { "name": "Utku Kopuz" },
+  "plugins": [
+    {
+      "name": "atdd",
+      "source": "./",
+      "description": "Develop software from agreed user stories and acceptance criteria using a test-first ATDD workflow."
+    }
+  ]
+}
